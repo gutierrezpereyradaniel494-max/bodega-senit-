@@ -1,1 +1,588 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bodega SENIT - Los Gorditos | Gestión Oficial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cabinet+Grotesk:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-display: 'Cabinet Grotesk', system-ui, sans-serif;
+      --brand-red: #d51829;
+      --brand-red-dark: #b71120;
+      --brand-yellow: #ffcc00;
+      --brand-yellow-subtle: #fff9e6;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-surface: #ffffff;
+      --border-subtle: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 6px 16px -2px rgba(0,0,0,0.08);
+      --shadow-lg: 0 18px 30px -4px rgba(213,24,41,0.14);
+      --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    [data-theme="dark"] {
+      --bg-body: #090a0f;
+      --bg-card: #131722;
+      --bg-surface: #1a1f2e;
+      --border-subtle: #262e42;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.4);
+      --shadow-md: 0 8px 20px rgba(0,0,0,0.5);
+      --shadow-lg: 0 18px 34px rgba(0,0,0,0.6);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .auth-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: radial-gradient(circle at top right, rgba(213,24,41,0.15), transparent 50%),
+                  radial-gradient(circle at bottom left, rgba(255,204,0,0.1), transparent 50%),
+                  var(--bg-body);
+      display: flex; align-items: center; justify-content: center; padding: 1.25rem;
+    }
+    .auth-card {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg); width: 100%; max-width: 420px;
+      padding: 2.25rem 2rem; box-shadow: var(--shadow-lg); text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .auth-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+      background: linear-gradient(90deg, var(--brand-red), var(--brand-yellow));
+    }
+    .auth-brand {
+      font-family: var(--font-display); font-size: 2.1rem; font-weight: 900;
+      color: var(--brand-red); letter-spacing: -0.04em; text-transform: lowercase; line-height: 1;
+    }
+    .auth-brand span { color: var(--brand-yellow); text-shadow: -1px -1px 0 #b71120, 1px -1px 0 #b71120, -1px 1px 0 #b71120, 1px 1px 0 #b71120; }
+    .auth-brand .brand-tag {
+      display: block; font-family: var(--font-main); font-size: 0.85rem;
+      font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.15em; margin-top: 0.35rem;
+    }
+    .auth-sub { font-size: 0.825rem; color: var(--text-muted); margin: 0.75rem 0 1.5rem; }
+    .form-group { text-align: left; margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 0.785rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .form-input {
+      width: 100%; padding: 0.75rem 1rem; font-family: var(--font-main); font-size: 0.95rem;
+      color: var(--text-main); background: var(--bg-surface); border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-sm); outline: none; transition: var(--transition);
+    }
+    .form-input:focus { border-color: var(--brand-red); box-shadow: 0 0 0 3px rgba(213,24,41,0.15); }
+    .password-toggle {
+      position: absolute; right: 10px; background: none; border: none; font-size: 1.1rem;
+      color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 4px;
+    }
+    .auth-btn {
+      width: 100%; background: var(--brand-red); color: white; border: none;
+      padding: 0.875rem 1rem; border-radius: var(--radius-sm); font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: var(--transition); margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .auth-btn:hover { background: var(--brand-red-dark); box-shadow: 0 8px 18px rgba(213,24,41,0.3); }
+    .auth-error {
+      background: rgba(213,24,41,0.08); border: 1px solid rgba(213,24,41,0.25);
+      color: var(--brand-red); font-size: 0.8rem; font-weight: 600; padding: 0.6rem;
+      border-radius: var(--radius-sm); margin-bottom: 1rem; display: none;
+    }
+    .app-root { display: none; flex: 1; flex-direction: column; }
+    .top-strip {
+      background: var(--brand-red-dark); color: white; font-size: 0.75rem;
+      padding: 0.4rem 1.25rem; display: flex; justify-content: space-between; align-items: center; font-weight: 600;
+    }
+    .top-strip-address { display: flex; align-items: center; gap: 0.35rem; }
+    .navbar {
+      background: var(--brand-red); color: white; padding: 0.85rem 1.25rem;
+      position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-md);
+    }
+    .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .brand-logo-wrap { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: white; }
+    .brand-logo-text { font-family: var(--font-display); font-size: 1.7rem; font-weight: 900; letter-spacing: -0.04em; text-transform: lowercase; line-height: 1; }
+    .brand-logo-text span { color: var(--brand-yellow); text-shadow: -1px -1px 0 #b71120, 1px -1px 0 #b71120, -1px 1px 0 #b71120, 1px 1px 0 #b71120; }
+    .brand-badge {
+      background: var(--brand-yellow); color: #000; font-family: var(--font-main);
+      font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase;
+    }
+    .nav-tools { display: flex; align-items: center; gap: 0.6rem; }
+    .btn-action {
+      border: none; outline: none; cursor: pointer; font-family: var(--font-main);
+      font-weight: 700; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 0.4rem; transition: var(--transition);
+    }
+    .btn-primary-yellow { background: var(--brand-yellow); color: #1e1e1e; padding: 0.55rem 0.95rem; font-size: 0.85rem; }
+    .btn-primary-yellow:hover { background: #ffd633; transform: translateY(-1px); }
+    .btn-icon-nav {
+      background: rgba(255, 255, 255, 0.18); color: white; width: 38px; height: 38px;
+      border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .btn-icon-nav:hover { background: rgba(255, 255, 255, 0.3); }
+    .btn-logout { background: rgba(0,0,0,0.25); color: #fff; font-size: 0.75rem; padding: 0.45rem 0.75rem; border-radius: var(--radius-sm); }
+    .btn-logout:hover { background: rgba(0,0,0,0.45); }
+    .main-container { max-width: 1200px; margin: 0 auto; padding: 1.25rem; width: 100%; flex: 1; }
+    .search-row {
+      display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+      background: var(--bg-card); padding: 0.85rem; border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);
+    }
+    .search-input-box { flex: 1; min-width: 240px; position: relative; }
+    .search-input-box input {
+      width: 100%; padding: 0.65rem 0.85rem 0.65rem 2.25rem; font-family: var(--font-main);
+      font-size: 0.9rem; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm);
+      outline: none; background: var(--bg-surface); color: var(--text-main);
+    }
+    .search-input-box input:focus { border-color: var(--brand-red); }
+    .search-icon-abs { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.95rem; color: var(--text-muted); }
+    .category-pills { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.25rem; scrollbar-width: none; }
+    .category-pills::-webkit-scrollbar { display: none; }
+    .pill {
+      white-space: nowrap; font-size: 0.75rem; font-weight: 700; padding: 0.45rem 0.8rem;
+      border-radius: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      color: var(--text-muted); cursor: pointer; transition: var(--transition);
+    }
+    .pill.active, .pill:hover { background: var(--brand-red); color: white; border-color: var(--brand-red); }
+    .stats-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted);
+    }
+    .stats-badge { background: var(--bg-card); padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); }
+    .stats-badge b { color: var(--brand-red); }
+    .products-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.25rem; margin-bottom: 2.5rem;
+    }
+    @media (max-width: 540px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    }
+    .product-card {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md); padding: 1rem; position: relative;
+      display: flex; flex-direction: column; transition: var(--transition); box-shadow: var(--shadow-sm);
+    }
+    .product-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(213,24,41,0.3); }
+    .badge-category {
+      position: absolute; top: 0.75rem; left: 0.75rem; font-size: 0.65rem;
+      font-weight: 800; text-transform: uppercase; padding: 0.2rem 0.45rem;
+      border-radius: 4px; background: rgba(0,0,0,0.06); color: var(--text-muted);
+    }
+    [data-theme="dark"] .badge-category { background: rgba(255,255,255,0.08); color: #cbd5e1; }
+    .card-actions { position: absolute; top: 0.65rem; right: 0.65rem; display: flex; gap: 0.25rem; }
+    .btn-card-action {
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center;
+      justify-content: center; font-size: 0.75rem; cursor: pointer; color: var(--text-muted); transition: var(--transition);
+    }
+    .btn-card-action:hover { color: var(--brand-red); border-color: var(--brand-red); transform: scale(1.08); }
+    .product-media {
+      height: 120px; display: flex; align-items: center; justify-content: center;
+      margin: 1.25rem 0 0.85rem; font-size: 3.5rem;
+    }
+    .product-media img { max-height: 110px; max-width: 100%; object-fit: contain; }
+    .product-name {
+      font-size: 0.95rem; font-weight: 700; color: var(--text-main);
+      margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; min-height: 2.85rem; line-height: 1.4;
+    }
+    .product-price { font-family: var(--font-display); font-size: 1.35rem; font-weight: 900; color: var(--brand-red); margin-top: auto; }
+    .product-price span { font-size: 0.85rem; font-weight: 700; margin-right: 0.15rem; }
+    .empty-state {
+      grid-column: 1 / -1; text-align: center; padding: 4rem 1rem;
+      background: var(--bg-card); border: 2px dashed var(--border-subtle); border-radius: var(--radius-lg);
+    }
+    .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.8; }
+    .empty-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.35rem; }
+    .empty-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1rem;
+    }
+    .modal-box {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg); width: 100%; max-width: 480px;
+      box-shadow: var(--shadow-lg); overflow: hidden; animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      padding: 1.1rem 1.4rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 0.4rem; }
+    .btn-close-modal { background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; }
+    .modal-body { padding: 1.4rem; max-height: 80vh; overflow-y: auto; }
+    .modal-footer {
+      padding: 0.9rem 1.4rem; background: var(--bg-surface); border-top: 1px solid var(--border-subtle);
+      display: flex; justify-content: flex-end; gap: 0.6rem;
+    }
+    .preset-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem; margin-bottom: 0.85rem; }
+    .preset-btn {
+      background: var(--bg-surface); border: 1.5px solid var(--border-subtle);
+      font-size: 1.5rem; border-radius: var(--radius-sm); padding: 0.5rem 0; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: var(--transition);
+    }
+    .preset-btn:hover, .preset-btn.selected { border-color: var(--brand-red); background: rgba(213,24,41,0.08); transform: scale(1.05); }
+    footer {
+      background: var(--bg-card); border-top: 1px solid var(--border-subtle);
+      padding: 1.5rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN OVERLAY -->
+  <div id="authScreen" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-brand">
+        bodega<span>senit</span>
+        <span class="brand-tag">"Los Gorditos"</span>
+      </div>
+      <p class="auth-sub">Prol. Bogotá N° 300 · Panel de Control de Inventario</p>
+      <div id="authError" class="auth-error">Usuario o contraseña incorrectos.</div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="username">Usuario</label>
+          <input type="text" id="username" class="form-input" placeholder="Ingresa usuario (admin)" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Contraseña</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" id="togglePasswordBtn" class="password-toggle" title="Ver contraseña">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="auth-btn">Iniciar Sesión ➔</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- APLICACIÓN PRINCIPAL -->
+  <div id="appRoot" class="app-root">
+    <div class="top-strip">
+      <div class="top-strip-address">📍 Bodega SENIT · Prolongación Bogotá N° 300 ("Los Gorditos")</div>
+      <div>Atención diaria · Ica</div>
+    </div>
+    <header class="navbar">
+      <div class="nav-inner">
+        <div class="brand-logo-wrap">
+          <div class="brand-logo-text">bodega<span>senit</span></div>
+          <span class="brand-badge">Gorditos</span>
+        </div>
+        <div class="nav-tools">
+          <button class="btn-action btn-primary-yellow" id="openAddModalBtn">+ Producto</button>
+          <button class="btn-icon-nav" id="themeToggleBtn" title="Cambiar tema">🌓</button>
+          <button class="btn-action btn-logout" id="logoutBtn" title="Cerrar sesión">Salir</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <div class="search-row">
+        <div class="search-input-box">
+          <span class="search-icon-abs">🔍</span>
+          <input type="text" id="searchInput" placeholder="Buscar producto en bodega...">
+        </div>
+        <div class="category-pills" id="categoryPills">
+          <button class="pill active" data-cat="all">Todos</button>
+          <button class="pill" data-cat="Abarrotes">Abarrotes</button>
+          <button class="pill" data-cat="Bebidas">Bebidas</button>
+          <button class="pill" data-cat="Lácteos">Lácteos</button>
+          <button class="pill" data-cat="Golosinas">Golosinas</button>
+          <button class="pill" data-cat="Limpieza">Limpieza</button>
+          <button class="pill" data-cat="Otros">Otros</button>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stats-badge">Total Productos: <b id="totalCount">0</b></div>
+        <div class="stats-badge">Filtro: <b id="activeFilterName">Todos</b></div>
+      </div>
+
+      <div class="products-grid" id="productsGrid"></div>
+    </main>
+
+    <footer>
+      Bodega SENIT - "Los Gorditos" &copy; 2026 · Sistema Web de Administración Local
+    </footer>
+  </div>
+
+  <!-- MODAL AGREGAR / EDITAR -->
+  <div class="modal-backdrop" id="productModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Agregar Producto</h3>
+        <button class="btn-close-modal" id="closeModalBtn">&times;</button>
+      </div>
+      <form id="productForm">
+        <div class="modal-body">
+          <input type="hidden" id="prodId">
+          <div class="form-group">
+            <label class="form-label" for="prodName">Nombre del Producto</label>
+            <input type="text" id="prodName" class="form-input" placeholder="Ej. Arroz Costeño 1kg" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prodPrice">Precio (S/.)</label>
+            <input type="number" step="0.10" min="0" id="prodPrice" class="form-input" placeholder="Ej. 4.80" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prodCategory">Categoría</label>
+            <select id="prodCategory" class="form-input">
+              <option value="Abarrotes">Abarrotes</option>
+              <option value="Bebidas">Bebidas</option>
+              <option value="Lácteos">Lácteos</option>
+              <option value="Golosinas">Golosinas</option>
+              <option value="Limpieza">Limpieza</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Elegir Logo / Icono Rápido</label>
+            <div class="preset-grid" id="presetGrid">
+              <button type="button" class="preset-btn" data-icon="🥤">🥤</button>
+              <button type="button" class="preset-btn" data-icon="🥛">🥛</button>
+              <button type="button" class="preset-btn" data-icon="🍚">🍚</button>
+              <button type="button" class="preset-btn" data-icon="🍪">🍪</button>
+              <button type="button" class="preset-btn" data-icon="🧼">🧼</button>
+              <button type="button" class="preset-btn" data-icon="📦">📦</button>
+            </div>
+            <label class="form-label" for="prodCustomLogo">O pega URL de imagen / logo</label>
+            <input type="url" id="prodCustomLogo" class="form-input" placeholder="https://ejemplo.com/logo.png">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-action" id="cancelModalBtn" style="background:#e2e8f0; color:#333; padding:0.5rem 1rem;">Cancelar</button>
+          <button type="submit" class="btn-action btn-primary-yellow" style="padding:0.5rem 1.2rem;">Guardar Producto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const AUTH_USER = "admin";
+    const AUTH_PASS = "admin159";
+    const STORAGE_KEY = "senit_bodega_products_db";
+    const SESSION_KEY = "senit_auth_token";
+
+    let products = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let selectedIcon = "📦";
+    let activeFilter = "all";
+
+    // Manejo de Autenticación
+    const authScreen = document.getElementById('authScreen');
+    const appRoot = document.getElementById('appRoot');
+    const loginForm = document.getElementById('loginForm');
+    const authError = document.getElementById('authError');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function checkAuth() {
+      if (localStorage.getItem(SESSION_KEY) === "true") {
+        authScreen.style.display = "none";
+        appRoot.style.display = "flex";
+      } else {
+        authScreen.style.display = "flex";
+        appRoot.style.display = "none";
+      }
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (usernameInput.value.trim() === AUTH_USER && passwordInput.value.trim() === AUTH_PASS) {
+        localStorage.setItem(SESSION_KEY, "true");
+        authError.style.display = "none";
+        checkAuth();
+      } else {
+        authError.style.display = "block";
+      }
+    });
+
+    togglePasswordBtn.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      togglePasswordBtn.textContent = type === 'password' ? '👁️' : '🔒';
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem(SESSION_KEY);
+      checkAuth();
+    });
+
+    // Tema Claro / Oscuro
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+
+    themeToggleBtn.addEventListener('click', () => {
+      const nextTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('theme', nextTheme);
+    });
+
+    // Render de Productos
+    const productsGrid = document.getElementById('productsGrid');
+    const totalCount = document.getElementById('totalCount');
+    const searchInput = document.getElementById('searchInput');
+
+    function saveProducts() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const query = searchInput.value.toLowerCase().trim();
+      const filtered = products.filter(p => {
+        const matchesCategory = (activeFilter === "all" || p.category === activeFilter);
+        const matchesQuery = p.name.toLowerCase().includes(query);
+        return matchesCategory && matchesQuery;
+      });
+
+      totalCount.textContent = products.length;
+
+      if (filtered.length === 0) {
+        productsGrid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <div class="empty-title">Sin productos registrados</div>
+            <p class="empty-desc">Toca en "+ Producto" para agregar artículos al inventario.</p>
+          </div>
+        `;
+        return;
+      }
+
+      productsGrid.innerHTML = filtered.map(p => `
+        <div class="product-card">
+          <span class="badge-category">${p.category}</span>
+          <div class="card-actions">
+            <button class="btn-card-action" onclick="editProduct('${p.id}')" title="Editar">✏️</button>
+            <button class="btn-card-action" onclick="deleteProduct('${p.id}')" title="Eliminar">🗑️</button>
+          </div>
+          <div class="product-media">
+            ${p.logo.startsWith('http') ? `<img src="${p.logo}" alt="${p.name}">` : p.logo}
+          </div>
+          <div class="product-name">${p.name}</div>
+          <div class="product-price"><span>S/.</span>${Number(p.price).toFixed(2)}</div>
+        </div>
+      `).join('');
+    }
+
+    // Modal & CRUD
+    const productModal = document.getElementById('productModal');
+    const productForm = document.getElementById('productForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const prodId = document.getElementById('prodId');
+    const prodName = document.getElementById('prodName');
+    const prodPrice = document.getElementById('prodPrice');
+    const prodCategory = document.getElementById('prodCategory');
+    const prodCustomLogo = document.getElementById('prodCustomLogo');
+    const presetButtons = document.querySelectorAll('.preset-btn');
+
+    presetButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        presetButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedIcon = btn.dataset.icon;
+        prodCustomLogo.value = '';
+      });
+    });
+
+    document.getElementById('openAddModalBtn').addEventListener('click', () => {
+      modalTitle.textContent = "Agregar Producto";
+      prodId.value = '';
+      productForm.reset();
+      selectedIcon = "📦";
+      presetButtons.forEach(b => b.classList.remove('selected'));
+      productModal.style.display = "flex";
+    });
+
+    document.getElementById('closeModalBtn').addEventListener('click', () => productModal.style.display = "none");
+    document.getElementById('cancelModalBtn').addEventListener('click', () => productModal.style.display = "none");
+
+    productForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const logoFinal = prodCustomLogo.value.trim() || selectedIcon;
+      if (prodId.value) {
+        // Editar
+        const item = products.find(p => p.id === prodId.value);
+        if (item) {
+          item.name = prodName.value.trim();
+          item.price = parseFloat(prodPrice.value);
+          item.category = prodCategory.value;
+          item.logo = logoFinal;
+        }
+      } else {
+        // Nuevo
+        products.push({
+          id: Date.now().toString(),
+          name: prodName.value.trim(),
+          price: parseFloat(prodPrice.value),
+          category: prodCategory.value,
+          logo: logoFinal
+        });
+      }
+      saveProducts();
+      productModal.style.display = "none";
+    });
+
+    window.editProduct = function(id) {
+      const item = products.find(p => p.id === id);
+      if (!item) return;
+      modalTitle.textContent = "Editar Producto";
+      prodId.value = item.id;
+      prodName.value = item.name;
+      prodPrice.value = item.price;
+      prodCategory.value = item.category;
+      if (item.logo.startsWith('http')) {
+        prodCustomLogo.value = item.logo;
+      } else {
+        selectedIcon = item.logo;
+      }
+      productModal.style.display = "flex";
+    };
+
+    window.deleteProduct = function(id) {
+      if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+        products = products.filter(p => p.id !== id);
+        saveProducts();
+      }
+    };
+
+    // Filtros & Búsqueda
+    document.querySelectorAll('.pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        activeFilter = pill.dataset.cat;
+        document.getElementById('activeFilterName').textContent = pill.textContent;
+        renderProducts();
+      });
+    });
+
+    searchInput.addEventListener('input', renderProducts);
+
+    // Inicializar
+    checkAuth();
+    renderProducts();
+  </script>
+</body>
+</html>
 
